@@ -40,10 +40,9 @@ RSpec.describe ProductScanner do
 
       it 'updates the quantity of basket items when scanning the same product multiple times' do
         scanner.scan(product.product_code)
-        scanner.scan(product.product_code)
-
-        expect(basket.basket_items.where(product:).count).to eq(1)
-        expect(basket.basket_items.find_by(product:).quantity).to eq(2)
+        
+        expect { scanner.scan(product.product_code) }.to change { basket.basket_items.where(product:).count }.by(0)
+        expect { scanner.scan(product.product_code) }.to change { basket.basket_items.find_by(product:).quantity }.by(1)
       end
     end
 
