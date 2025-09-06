@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_06_045450) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_06_113820) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_045450) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "offers", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.integer "discount_type"
+    t.integer "rate_type"
+    t.decimal "percentage_rate", precision: 5, scale: 2
+    t.integer "fixed_price_cents", default: 0, null: false
+    t.string "fixed_price_currency", default: "EUR", null: false
+    t.integer "minimum_quantity"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "product_offers", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "offer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_id"], name: "index_product_offers_on_offer_id"
+    t.index ["product_id", "offer_id"], name: "index_product_offers_on_product_id_and_offer_id", unique: true
+    t.index ["product_id"], name: "index_product_offers_on_product_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "product_code", null: false
     t.string "name", null: false
@@ -41,4 +64,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_045450) do
 
   add_foreign_key "basket_items", "baskets"
   add_foreign_key "basket_items", "products"
+  add_foreign_key "product_offers", "offers"
+  add_foreign_key "product_offers", "products"
 end
