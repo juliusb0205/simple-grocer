@@ -8,22 +8,54 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-Product.create!([
-  {
-    product_code: 'GR1',
-    name: 'Green Tea',
-    price_cents: 311
-  },
-  {
-    product_code: 'SR1',
-    name: 'Strawberries',
-    price_cents: 500
-  },
-  {
-    product_code: 'CF1',
-    name: 'Coffee',
-    price_cents: 1123
-  }
-])
+Product.find_or_create_by!(product_code: 'GR1') do |product|
+  product.name = 'Green Tea'
+  product.price_cents = 311
+end
+
+Product.find_or_create_by!(product_code: 'SR1') do |product|
+  product.name = 'Strawberries'
+  product.price_cents = 500
+end
+
+Product.find_or_create_by!(product_code: 'CF1') do |product|
+  product.name = 'Coffee'
+  product.price_cents = 1123
+end
 
 puts "Created #{Product.count} products"
+
+baskets_data = [
+  {
+    "GR1" => 3,
+    "SR1" => 1,
+    "CF1" => 1
+  },
+  {
+    "GR1" => 2,
+  },
+  {
+    "SR1" => 3,
+    "GR1" => 1,
+  },
+  {
+    "GR1" => 1,
+    "CF1" => 3,
+    "SR1" => 1
+  }
+]
+
+baskets_data.each_with_index do |products, index|
+  basket = Basket.create!
+
+  products.each do |product_code, quantity|
+    product = Product.find_by!(product_code:)
+    BasketItem.create!(
+      basket: basket,
+      product: product,
+      quantity: quantity
+    )
+  end
+
+  puts "Created basket #{index + 1} with #{products.keys.join(', ')}"
+end
