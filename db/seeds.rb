@@ -51,9 +51,9 @@ baskets_data.each_with_index do |products, index|
   products.each do |product_code, quantity|
     product = Product.find_by!(product_code:)
     BasketItem.create!(
-      basket: basket,
-      product: product,
-      quantity: quantity
+      basket:,
+      product:,
+      quantity:
     )
   end
 
