@@ -7,14 +7,16 @@ class ProductScanner
 
   def scan(product_code)
     product = Product.find_by(product_code:)
-    return 'INVALID' unless product
+    return false unless product
 
     existing_item = basket.basket_items.find_by(product:)
 
     if existing_item
       existing_item.increment!(:quantity)
     else
-      basket.basket_items.create(product:, quantity: 1)
+      basket.basket_items.create!(product:, quantity: 1)
     end
+
+    true
   end
 end
