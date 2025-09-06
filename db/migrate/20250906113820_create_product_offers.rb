@@ -6,7 +6,7 @@ class CreateProductOffers < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
-    add_index :product_offers, [:product_id, :offer_id], unique: true
+
+    add_index :product_offers, [ :product_id, :offer_id ], unique: true
   end
 end
