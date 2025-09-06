@@ -25,6 +25,39 @@ end
 
 puts "Created #{Product.count} products"
 
+offer_1 = Offer.find_or_create_by!(name: 'Green Tea BOGO') do |offer|
+  offer.description = 'Buy one green tea, get one free'
+  offer.discount_type = :buy_one_take_one
+  offer.minimum_quantity = 2
+end
+
+green_tea = Product.find_by!(product_code: 'GR1')
+ProductOffer.find_or_create_by!(product: green_tea, offer: offer_1)
+
+offer_2 = Offer.find_or_create_by!(name: 'Strawberry Bulk Discount') do |offer|
+  offer.description = 'Buy 3 or more strawberries for 4.50€ each'
+  offer.discount_type = :quantity_discount
+  offer.rate_type = :fixed_price
+  offer.fixed_price_cents = 450
+  offer.minimum_quantity = 3
+end
+
+strawberry = Product.find_by!(product_code: 'SR1')
+ProductOffer.find_or_create_by!(product: strawberry, offer: offer_2)
+
+offer_3 = Offer.find_or_create_by!(name: 'Coffee Bulk Discount') do |offer|
+  offer.description = 'Buy 3 or more coffees for 2/3 of original price'
+  offer.discount_type = :quantity_discount
+  offer.rate_type = :percentage_rate
+  offer.percentage_rate = 66.66
+  offer.minimum_quantity = 3
+end
+
+coffee = Product.find_by!(product_code: 'CF1')
+ProductOffer.find_or_create_by!(product: coffee, offer: offer_3)
+
+puts "Created #{Offer.count} offers"
+
 baskets_data = [
   {
     "GR1" => 3,
