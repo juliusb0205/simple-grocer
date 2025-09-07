@@ -11,7 +11,7 @@ FactoryBot.define do
       discount_type { :buy_one_take_one }
       rate_type { nil }
       percentage_rate { nil }
-      fixed_price_cents { nil }
+      fixed_price_cents { 0 }
       minimum_quantity { 2 }
     end
 
