@@ -86,7 +86,8 @@ baskets_data.each_with_index do |products, index|
     BasketItem.create!(
       basket:,
       product:,
-      quantity:
+      quantity:,
+      price_cents: product.price_cents * quantity
     )
   end
 

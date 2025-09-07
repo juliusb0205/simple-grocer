@@ -1,8 +1,10 @@
 class Product < ApplicationRecord
   monetize :price_cents
 
-  has_many :product_offers, dependent: :destroy
-  has_many :offers, through: :product_offers
+  # NOTE: Changed to `has_one` to reflect the one-to-one relationship
+  # Change to `has_many` if a product can have multiple offers in the future
+  has_one :product_offer, dependent: :destroy
+  has_one :offer, through: :product_offer
 
   validates :product_code, length: { is: 3, message: "must be exactly 3 characters" }
 end
