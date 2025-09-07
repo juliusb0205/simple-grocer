@@ -1,6 +1,5 @@
 module Pricing
   class BuyOneTakeOnePricingStrategy < Strategy
-
     def conditions_met?
       @basket_item.quantity >= 2
     end

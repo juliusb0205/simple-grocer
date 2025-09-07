@@ -1,6 +1,5 @@
 module Pricing
   class QuantityDiscountPricingStrategy < Strategy
-
     def conditions_met?
       @basket_item.quantity >= @offer.minimum_quantity
     end
