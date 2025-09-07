@@ -9,14 +9,28 @@ class ProductScanner
     product = Product.find_by(product_code:)
     return false unless product
 
+    basket_item = add_product_to_basket(product)
+
+    true
+  end
+
+  private
+
+  def add_product_to_basket(product)
     existing_item = basket.basket_items.find_by(product:)
 
     if existing_item
-      existing_item.increment!(:quantity)
+      existing_item.tap do |item|
+        item.quantity += 1
+        item.price = Pricing::StrategyResolver.create(item, product.offer).call
+        item.save!
+      end
     else
-      basket.basket_items.create!(product:, quantity: 1)
+      new_item = basket.basket_items.build(product:, quantity: 1)
+      new_item.tap do |item|
+        item.price = Pricing::StrategyResolver.create(item, product.offer).call
+        item.save!
+      end
     end
-
-    true
   end
 end
