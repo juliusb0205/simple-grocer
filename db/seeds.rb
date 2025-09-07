@@ -80,15 +80,11 @@ baskets_data = [
 
 baskets_data.each_with_index do |products, index|
   basket = Basket.create!
-
+  scanner = ProductScanner.new(basket)
   products.each do |product_code, quantity|
-    product = Product.find_by!(product_code:)
-    BasketItem.create!(
-      basket:,
-      product:,
-      quantity:,
-      price_cents: product.price_cents * quantity
-    )
+    quantity.times do
+      scanner.scan(product_code)
+    end
   end
 
   puts "Created basket #{index + 1} with #{products.keys.join(', ')}"

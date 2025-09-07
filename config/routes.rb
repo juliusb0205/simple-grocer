@@ -9,6 +9,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Application routes
+  resources :baskets, only: [:index]
+
+  get "scanner", to: "scanner#index"
+  post "scan", to: "scanner#scan"
+  post "checkout", to: "scanner#checkout"
+
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "scanner#index"
 end

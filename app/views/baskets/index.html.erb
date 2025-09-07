@@ -1,0 +1,68 @@
+<div class="w-full">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Baskets</h1>
+  </div>
+
+  <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Basket ID
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Products
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Total Price
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @baskets.each do |basket| %>
+          <% basket.basket_items.each_with_index do |item, index| %>
+            <tr class="hover:bg-gray-50">
+              <% if index == 0 %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" rowspan="<%= basket.basket_items.count %>">
+                  #<%= basket.id %>
+                </td>
+              <% end %>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  <%= item.product.name %> × <%= item.quantity %>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <%= item.product.product_code %>
+                </div>
+              </td>
+              <% if index == 0 %>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900" rowspan="<%= basket.basket_items.count %>">
+                  <%= basket.total_price.format %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+          <% if basket.basket_items.empty? %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                #<%= basket.id %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 italic">
+                No items
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
+                <%= basket.total_price.format %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <% if @baskets.empty? %>
+      <div class="px-6 py-12 text-center text-gray-500">
+        <p>No baskets found.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
