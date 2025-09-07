@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Application routes
-  resources :baskets, only: [:index]
+  resources :baskets, only: [ :index ]
 
   get "scanner", to: "scanner#index"
   post "scan", to: "scanner#scan"
