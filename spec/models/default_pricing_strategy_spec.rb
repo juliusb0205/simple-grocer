@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe DefaultPricingStrategy, type: :model do
+RSpec.describe Pricing::DefaultPricingStrategy, type: :model do
   let(:product) { create(:product, price_cents: 250) }
   let(:basket) { create(:basket) }
   let(:basket_item) { create(:basket_item, basket:, product:, quantity: 3, price_cents: 100) }
   let(:offer) { create(:offer) }
-  let(:strategy) { DefaultPricingStrategy.new(basket_item, offer) }
+  let(:strategy) { Pricing::DefaultPricingStrategy.new(basket_item, offer) }
 
   describe '#call' do
     it 'returns the correct price calculation' do
