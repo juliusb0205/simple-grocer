@@ -23,15 +23,20 @@ class ProductScanner
     if existing_item
       existing_item.tap do |item|
         item.quantity += 1
-        item.price_cents = product.price_cents * item.quantity
+        item.price_cents = DefaultPricingStrategy.new(item).call
         item.save!
       end
     else
-      basket.basket_items.create!(product:, quantity: 1, price_cents: product.price_cents)
+      new_item = basket.basket_items.build(product:, quantity: 1)
+      new_item.tap do |item|
+        item.price_cents = DefaultPricingStrategy.new(item).call
+        item.save!
+      end
     end
   end
 
   def calculate_basket_item_price(basket_item)
-    basket_item.update!(price_cents: basket_item.product.price_cents * basket_item.quantity)
+    basket_item.price = DefaultPricingStrategy.new(basket_item).call
+    basket_item.save!
   end
 end

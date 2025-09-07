@@ -1,5 +1,5 @@
 class PricingStrategy
-  def initialize(basket_item, offer)
+  def initialize(basket_item, offer = nil)
     @offer = offer
     @basket_item = basket_item
   end
