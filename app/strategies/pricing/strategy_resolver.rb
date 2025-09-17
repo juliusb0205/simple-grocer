@@ -1,7 +1,7 @@
 module Pricing
   class StrategyResolver
     STRATEGY_MAP = {
-      "buy_one_take_one" => Pricing::BuyOneTakeOnePricingStrategy,
+      "buy_x_take_y" => Pricing::BuyXTakeYPricingStrategy,
       "quantity_discount" => Pricing::QuantityDiscountPricingStrategy
     }.freeze
 

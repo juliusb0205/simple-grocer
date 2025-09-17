@@ -4,7 +4,7 @@ class Offer < ApplicationRecord
   has_many :offer_conditions, dependent: :destroy
 
   enum :offer_type, {
-    buy_one_take_one: 0,
+    buy_x_take_y: 0,
     quantity_discount: 1
   }
 
@@ -13,8 +13,8 @@ class Offer < ApplicationRecord
   validate :required_conditions_present
 
   DISCOUNT_TYPE_CONFIGS = {
-    "buy_one_take_one" => {
-      required: []
+    "buy_x_take_y" => {
+      required: [ "base_quantity", "free_quantity" ]
     },
     "quantity_discount" => {
       required: [ "minimum_quantity" ]

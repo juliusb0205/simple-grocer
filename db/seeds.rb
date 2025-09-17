@@ -23,11 +23,24 @@ Product.find_or_create_by!(product_code: 'CF1') do |product|
   product.price_cents = 1123
 end
 
+Product.find_or_create_by!(product_code: 'MK1') do |product|
+  product.name = 'Milk'
+  product.price_cents = 195
+end
+
+Product.find_or_create_by!(product_code: 'JM1') do |product|
+  product.name = 'Jam'
+  product.price_cents = 280
+end
+
 puts "Created #{Product.count} products"
 
-offer_1 = Offer.find_or_create_by!(name: 'Green Tea BOGO') do |offer|
-  offer.description = 'Buy one green tea, get one free'
-  offer.offer_type = :buy_one_take_one
+offer_1 = Offer.find_by(name: 'Green Tea BOGO')
+unless offer_1
+  offer_1 = Offer.new(name: 'Green Tea BOGO', description: 'Buy one green tea, get one free', offer_type: :buy_x_take_y)
+  offer_1.offer_conditions.build(condition_type: 'base_quantity', condition_value: '1')
+  offer_1.offer_conditions.build(condition_type: 'free_quantity', condition_value: '1')
+  offer_1.save!
 end
 
 green_tea = Product.find_by!(product_code: 'GR1')
@@ -52,6 +65,28 @@ end
 
 coffee = Product.find_by!(product_code: 'CF1')
 ProductOffer.find_or_create_by!(product: coffee, offer: offer_3)
+
+offer_4 = Offer.find_by(name: 'Milk Buy 2 Take 1')
+unless offer_4
+  offer_4 = Offer.new(name: 'Milk Buy 2 Take 1', description: 'Buy 2 milk, get 1 free', offer_type: :buy_x_take_y)
+  offer_4.offer_conditions.build(condition_type: 'base_quantity', condition_value: '2')
+  offer_4.offer_conditions.build(condition_type: 'free_quantity', condition_value: '1')
+  offer_4.save!
+end
+
+milk = Product.find_by!(product_code: 'MK1')
+ProductOffer.find_or_create_by!(product: milk, offer: offer_4)
+
+offer_5 = Offer.find_by(name: 'Jam Buy 3 Take 2')
+unless offer_5
+  offer_5 = Offer.new(name: 'Jam Buy 3 Take 2', description: 'Buy 3 jam, get 2 free', offer_type: :buy_x_take_y)
+  offer_5.offer_conditions.build(condition_type: 'base_quantity', condition_value: '3')
+  offer_5.offer_conditions.build(condition_type: 'free_quantity', condition_value: '2')
+  offer_5.save!
+end
+
+jam = Product.find_by!(product_code: 'JM1')
+ProductOffer.find_or_create_by!(product: jam, offer: offer_5)
 
 puts "Created #{Offer.count} offers"
 
