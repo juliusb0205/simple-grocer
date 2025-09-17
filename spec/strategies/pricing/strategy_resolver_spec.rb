@@ -57,7 +57,7 @@ RSpec.describe Pricing::StrategyResolver do
     end
 
     context 'with quantity_discount offer' do
-      let(:offer) { create(:offer, offer_type: :quantity_discount) }
+      let(:offer) { create(:offer, :quantity_discount) }
 
       before do
         create(:product_offer, product:, offer:)

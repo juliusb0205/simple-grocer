@@ -33,17 +33,21 @@ end
 green_tea = Product.find_by!(product_code: 'GR1')
 ProductOffer.find_or_create_by!(product: green_tea, offer: offer_1)
 
-offer_2 = Offer.find_or_create_by!(name: 'Strawberry Bulk Discount') do |offer|
-  offer.description = 'Buy 3 or more strawberries for 4.50€ each'
-  offer.offer_type = :quantity_discount
+offer_2 = Offer.find_by(name: 'Strawberry Bulk Discount')
+unless offer_2
+  offer_2 = Offer.new(name: 'Strawberry Bulk Discount', description: 'Buy 3 or more strawberries for 4.50€ each', offer_type: :quantity_discount)
+  offer_2.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: '3')
+  offer_2.save!
 end
 
 strawberry = Product.find_by!(product_code: 'SR1')
 ProductOffer.find_or_create_by!(product: strawberry, offer: offer_2)
 
-offer_3 = Offer.find_or_create_by!(name: 'Coffee Bulk Discount') do |offer|
-  offer.description = 'Buy 3 or more coffees for 2/3 of original price'
-  offer.offer_type = :quantity_discount
+offer_3 = Offer.find_by(name: 'Coffee Bulk Discount')
+unless offer_3
+  offer_3 = Offer.new(name: 'Coffee Bulk Discount', description: 'Buy 3 or more coffees for 2/3 of original price', offer_type: :quantity_discount)
+  offer_3.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: '3')
+  offer_3.save!
 end
 
 coffee = Product.find_by!(product_code: 'CF1')

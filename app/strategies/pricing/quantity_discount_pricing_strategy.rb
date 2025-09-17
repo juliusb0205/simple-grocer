@@ -1,7 +1,10 @@
 module Pricing
   class QuantityDiscountPricingStrategy < Strategy
     def conditions_met?
-      @basket_item.quantity >= @offer.minimum_quantity
+      minimum_qty = @offer.evaluate_condition(:minimum_quantity)&.to_i
+      return false unless minimum_qty
+
+      @basket_item.quantity >= minimum_qty
     end
 
     private
@@ -11,10 +14,13 @@ module Pricing
     end
 
     def item_price
-      if @offer.fixed_price?
-        @offer.fixed_price
-      elsif @offer.percentage_rate?
-        @basket_item.product.price * (@offer.percentage_rate / 100.0)
+      fixed_price = @offer.evaluate_condition(:fixed_price)&.to_f
+      percentage_rate = @offer.evaluate_condition(:percentage_rate)&.to_f
+
+      if fixed_price
+        fixed_price
+      elsif percentage_rate
+        @basket_item.product.price * (percentage_rate / 100.0)
       else
         @basket_item.product.price
       end

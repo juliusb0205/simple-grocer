@@ -10,7 +10,7 @@ module Pricing
         return DefaultPricingStrategy.new(basket_item, offer)
       end
 
-      strategy = STRATEGY_MAP[offer.discount_type]&.new(basket_item, offer)
+      strategy = STRATEGY_MAP[offer.offer_type]&.new(basket_item, offer)
 
       return strategy if strategy&.conditions_met?
 

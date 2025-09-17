@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :offer_condition do
-    offer { nil }
-    condition_type { "MyString" }
-    condition_value { "MyText" }
+    association :offer
+    condition_type { "minimum_quantity" }
+    condition_value { "3" }
   end
 end
