@@ -34,6 +34,16 @@
                 <div class="text-sm text-gray-500">
                   <%= item.product.product_code %>
                 </div>
+                <% if item.applied_offer %>
+                  <div class="text-xs text-green-600 font-medium mt-1">
+                    🎉 <%= item.applied_offer.name %>
+                  </div>
+                <% end %>
+                <% if item.discount_amount > 0 %>
+                  <div class="text-xs text-red-600 font-medium">
+                    Discount: -<%= item.discount_amount.format %>
+                  </div>
+                <% end %>
               </td>
               <% if index == 0 %>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900" rowspan="<%= basket.basket_items.count %>">
