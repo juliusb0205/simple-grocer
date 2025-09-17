@@ -11,6 +11,9 @@ class ProductScanner
 
     basket_item = add_product_to_basket(product)
 
+    # Apply basket-wide promotions after each scan
+    BasketPromotionService.new(basket).apply_promotions!
+
     true
   end
 

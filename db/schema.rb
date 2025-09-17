@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_041755) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_064818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_041755) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "price_cents", default: 0, null: false
+    t.integer "discount_amount_cents", default: 0
+    t.bigint "applied_offer_id"
+    t.index ["applied_offer_id"], name: "index_basket_items_on_applied_offer_id"
     t.index ["basket_id"], name: "index_basket_items_on_basket_id"
     t.index ["product_id"], name: "index_basket_items_on_product_id"
   end
@@ -68,6 +71,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_041755) do
   end
 
   add_foreign_key "basket_items", "baskets"
+  add_foreign_key "basket_items", "offers", column: "applied_offer_id"
   add_foreign_key "basket_items", "products"
   add_foreign_key "offer_conditions", "offers"
   add_foreign_key "product_offers", "offers"

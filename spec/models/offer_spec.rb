@@ -8,7 +8,7 @@ RSpec.describe Offer, type: :model do
   end
 
   describe 'enums' do
-    it { should define_enum_for(:offer_type).with_values(buy_x_take_y: 0, quantity_discount_fixed_price: 1, quantity_discount_percentage_rate: 2) }
+    it { should define_enum_for(:offer_type).with_values(buy_x_take_y: 0, quantity_discount_fixed_price: 1, quantity_discount_percentage_rate: 2, basket_buy_x_lowest_free: 3) }
   end
 
   describe 'validations' do

@@ -3,6 +3,6 @@ class Basket < ApplicationRecord
   has_many :products, through: :basket_items
 
   def total_price
-    Money.new(basket_items.sum(:price_cents))
+    basket_items.sum(&:final_price)
   end
 end

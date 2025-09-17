@@ -33,6 +33,22 @@ Product.find_or_create_by!(product_code: 'JM1') do |product|
   product.price_cents = 280
 end
 
+# New random products for basket promotion testing
+Product.find_or_create_by!(product_code: 'CK1') do |product|
+  product.name = 'Cookies'
+  product.price_cents = 150
+end
+
+Product.find_or_create_by!(product_code: 'YG1') do |product|
+  product.name = 'Yogurt'
+  product.price_cents = 89
+end
+
+Product.find_or_create_by!(product_code: 'BR1') do |product|
+  product.name = 'Bread'
+  product.price_cents = 225
+end
+
 puts "Created #{Product.count} products"
 
 offer_1 = Offer.find_by(name: 'Green Tea BOGO')
@@ -90,6 +106,27 @@ end
 jam = Product.find_by!(product_code: 'JM1')
 ProductOffer.find_or_create_by!(product: jam, offer: offer_5)
 
+# Basket-wide promotion: Buy 3 items, lowest free
+basket_offer = Offer.find_by(name: 'Buy 3 Items Lowest Free')
+unless basket_offer
+  basket_offer = Offer.new(
+    name: 'Buy 3 Items Lowest Free',
+    description: 'Buy any 3 eligible items (Cookies, Yogurt, Bread), get the cheapest one free',
+    offer_type: :basket_buy_x_lowest_free
+  )
+  basket_offer.offer_conditions.build(condition_type: 'minimum_items', condition_value: '3')
+  basket_offer.save!
+end
+
+# Link eligible products to basket offer
+cookies = Product.find_by!(product_code: 'CK1')
+yogurt = Product.find_by!(product_code: 'YG1')
+bread = Product.find_by!(product_code: 'BR1')
+
+ProductOffer.find_or_create_by!(product: cookies, offer: basket_offer)
+ProductOffer.find_or_create_by!(product: yogurt, offer: basket_offer)
+ProductOffer.find_or_create_by!(product: bread, offer: basket_offer)
+
 puts "Created #{Offer.count} offers"
 
 baskets_data = [
@@ -109,6 +146,29 @@ baskets_data = [
     "GR1" => 1,
     "CF1" => 3,
     "SR1" => 1
+  },
+  # New baskets showcasing basket-wide promotion
+  {
+    "CK1" => 1,  # Cookies €1.50
+    "YG1" => 1,  # Yogurt €0.89 (cheapest - should be free)
+    "BR1" => 1   # Bread €2.25
+  },
+  {
+    "YG1" => 2,  # Yogurt €0.89 each (both cheapest)
+    "CK1" => 1,  # Cookies €1.50
+    "BR1" => 3   # Bread €2.25 each (total 6 items: 2 free)
+  },
+  {
+    "GR1" => 1,  # Green Tea €3.11 (has individual BOGO offer)
+    "YG1" => 1,  # Yogurt €0.89 (cheapest - should be free with basket promotion)
+    "CK1" => 1   # Cookies €1.50
+  },
+  # Mixed basket: eligible + non-eligible products
+  {
+    "GR1" => 2,  # Green Tea €3.11 each (NOT eligible for basket promo)
+    "YG1" => 1,  # Yogurt €0.89 (eligible)
+    "CK1" => 1,  # Cookies €1.50 (eligible)
+    "BR1" => 1   # Bread €2.25 (eligible) - 3 eligible items = 1 free (yogurt)
   }
 ]
 
