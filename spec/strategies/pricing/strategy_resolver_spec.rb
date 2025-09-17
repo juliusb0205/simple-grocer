@@ -15,7 +15,7 @@ RSpec.describe Pricing::StrategyResolver do
 
     context 'when offer does not apply to product' do
       let(:other_product) { create(:product) }
-      let(:offer) { create(:offer, :buy_one_take_one) }
+      let(:offer) { create(:offer, :buy_x_take_y) }
 
       before do
         # Create product offer for other_product only
@@ -28,26 +28,26 @@ RSpec.describe Pricing::StrategyResolver do
       end
     end
 
-    context 'with buy_one_take_one offer' do
-      let(:offer) { create(:offer, :buy_one_take_one) }
+    context 'with buy_x_take_y offer' do
+      let(:offer) { create(:offer, :buy_x_take_y) }
 
       before do
         create(:product_offer, product:, offer:)
       end
 
       context 'when conditions are met' do
-        it 'returns BuyOneTakeOnePricingStrategy' do
-          allow_any_instance_of(Pricing::BuyOneTakeOnePricingStrategy)
+        it 'returns BuyXTakeYPricingStrategy' do
+          allow_any_instance_of(Pricing::BuyXTakeYPricingStrategy)
             .to receive(:conditions_met?).and_return(true)
 
           strategy = described_class.create(basket_item, offer)
-          expect(strategy).to be_a(Pricing::BuyOneTakeOnePricingStrategy)
+          expect(strategy).to be_a(Pricing::BuyXTakeYPricingStrategy)
         end
       end
 
       context 'when conditions are not met' do
         it 'returns DefaultPricingStrategy' do
-          allow_any_instance_of(Pricing::BuyOneTakeOnePricingStrategy)
+          allow_any_instance_of(Pricing::BuyXTakeYPricingStrategy)
             .to receive(:conditions_met?).and_return(false)
 
           strategy = described_class.create(basket_item, offer)
@@ -56,26 +56,54 @@ RSpec.describe Pricing::StrategyResolver do
       end
     end
 
-    context 'with quantity_discount offer' do
-      let(:offer) { create(:offer, :fixed_price_discount) }
+    context 'with quantity_discount_fixed_price offer' do
+      let(:offer) { create(:offer, :quantity_discount_fixed_price) }
 
       before do
         create(:product_offer, product:, offer:)
       end
 
       context 'when conditions are met' do
-        it 'returns QuantityDiscountPricingStrategy' do
-          allow_any_instance_of(Pricing::QuantityDiscountPricingStrategy)
+        it 'returns QuantityDiscountFixedPricePricingStrategy' do
+          allow_any_instance_of(Pricing::QuantityDiscountFixedPricePricingStrategy)
             .to receive(:conditions_met?).and_return(true)
 
           strategy = described_class.create(basket_item, offer)
-          expect(strategy).to be_a(Pricing::QuantityDiscountPricingStrategy)
+          expect(strategy).to be_a(Pricing::QuantityDiscountFixedPricePricingStrategy)
         end
       end
 
       context 'when conditions are not met' do
         it 'returns DefaultPricingStrategy' do
-          allow_any_instance_of(Pricing::QuantityDiscountPricingStrategy)
+          allow_any_instance_of(Pricing::QuantityDiscountFixedPricePricingStrategy)
+            .to receive(:conditions_met?).and_return(false)
+
+          strategy = described_class.create(basket_item, offer)
+          expect(strategy).to be_a(Pricing::DefaultPricingStrategy)
+        end
+      end
+    end
+
+    context 'with quantity_discount_percentage_rate offer' do
+      let(:offer) { create(:offer, :quantity_discount_percentage_rate) }
+
+      before do
+        create(:product_offer, product:, offer:)
+      end
+
+      context 'when conditions are met' do
+        it 'returns QuantityDiscountPercentageRatePricingStrategy' do
+          allow_any_instance_of(Pricing::QuantityDiscountPercentageRatePricingStrategy)
+            .to receive(:conditions_met?).and_return(true)
+
+          strategy = described_class.create(basket_item, offer)
+          expect(strategy).to be_a(Pricing::QuantityDiscountPercentageRatePricingStrategy)
+        end
+      end
+
+      context 'when conditions are not met' do
+        it 'returns DefaultPricingStrategy' do
+          allow_any_instance_of(Pricing::QuantityDiscountPercentageRatePricingStrategy)
             .to receive(:conditions_met?).and_return(false)
 
           strategy = described_class.create(basket_item, offer)

@@ -2,23 +2,58 @@ FactoryBot.define do
   factory :offer do
     name { "Sample Offer" }
     description { "A great promotional offer" }
-    discount_type { :quantity_discount }
-    rate_type { :percentage_rate }
-    percentage_rate { 10.0 }
-    minimum_quantity { 2 }
+    offer_type { :buy_x_take_y }
 
-    trait :buy_one_take_one do
-      discount_type { :buy_one_take_one }
-      rate_type { nil }
-      percentage_rate { nil }
-      fixed_price_cents { 0 }
-      minimum_quantity { 2 }
+    after(:build) do |offer|
+      if offer.offer_type == 'buy_x_take_y'
+        offer.offer_conditions.build(condition_type: 'base_quantity', condition_value: '1')
+        offer.offer_conditions.build(condition_type: 'free_quantity', condition_value: '1')
+      end
     end
 
-    trait :fixed_price_discount do
-      rate_type { :fixed_price }
-      percentage_rate { nil }
-      fixed_price_cents { 199 }
+    trait :buy_x_take_y do
+      offer_type { :buy_x_take_y }
+
+      transient do
+        base_quantity { 1 }
+        free_quantity { 1 }
+      end
+
+      after(:build) do |offer, evaluator|
+        offer.offer_conditions.clear
+        offer.offer_conditions.build(condition_type: 'base_quantity', condition_value: evaluator.base_quantity.to_s)
+        offer.offer_conditions.build(condition_type: 'free_quantity', condition_value: evaluator.free_quantity.to_s)
+      end
+    end
+
+    trait :quantity_discount_fixed_price do
+      offer_type { :quantity_discount_fixed_price }
+
+      transient do
+        minimum_quantity { 3 }
+        fixed_price { 4.50 }
+      end
+
+      after(:build) do |offer, evaluator|
+        offer.offer_conditions.clear
+        offer.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: evaluator.minimum_quantity.to_s)
+        offer.offer_conditions.build(condition_type: 'fixed_price', condition_value: evaluator.fixed_price.to_s)
+      end
+    end
+
+    trait :quantity_discount_percentage_rate do
+      offer_type { :quantity_discount_percentage_rate }
+
+      transient do
+        minimum_quantity { 3 }
+        percentage_rate { 66.67 }
+      end
+
+      after(:build) do |offer, evaluator|
+        offer.offer_conditions.clear
+        offer.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: evaluator.minimum_quantity.to_s)
+        offer.offer_conditions.build(condition_type: 'percentage_rate', condition_value: evaluator.percentage_rate.to_s)
+      end
     end
   end
 end

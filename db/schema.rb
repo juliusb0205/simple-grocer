@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_06_125705) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_041755) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,15 +30,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_125705) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "offer_conditions", force: :cascade do |t|
+    t.bigint "offer_id", null: false
+    t.string "condition_type"
+    t.text "condition_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_id"], name: "index_offer_conditions_on_offer_id"
+  end
+
   create_table "offers", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.integer "discount_type"
-    t.integer "rate_type"
-    t.decimal "percentage_rate", precision: 5, scale: 2
-    t.integer "fixed_price_cents", default: 0, null: false
-    t.string "fixed_price_currency", default: "EUR", null: false
-    t.integer "minimum_quantity"
+    t.integer "offer_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -65,6 +69,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_125705) do
 
   add_foreign_key "basket_items", "baskets"
   add_foreign_key "basket_items", "products"
+  add_foreign_key "offer_conditions", "offers"
   add_foreign_key "product_offers", "offers"
   add_foreign_key "product_offers", "products"
 end

@@ -4,119 +4,104 @@ RSpec.describe Offer, type: :model do
   describe 'associations' do
     it { should have_many(:product_offers).dependent(:destroy) }
     it { should have_many(:products).through(:product_offers) }
+    it { should have_many(:offer_conditions).dependent(:destroy) }
   end
 
   describe 'enums' do
-    it { should define_enum_for(:discount_type).with_values(buy_one_take_one: 0, quantity_discount: 1) }
-    it { should define_enum_for(:rate_type).with_values(fixed_price: 0, percentage_rate: 1) }
+    it { should define_enum_for(:offer_type).with_values(buy_x_take_y: 0, quantity_discount_fixed_price: 1, quantity_discount_percentage_rate: 2) }
   end
 
   describe 'validations' do
-    context 'when discount_type is buy_one_take_one' do
-      let(:offer) { build(:offer, discount_type: :buy_one_take_one) }
-
-      it 'allows all nullable fields to be blank' do
-        offer.rate_type = nil
-        offer.percentage_rate = nil
-        offer.fixed_price_cents = nil
-        offer.minimum_quantity = nil
-
-        expect(offer).to be_valid
-      end
-    end
-
-    context 'when discount_type is quantity_discount' do
-      let(:offer) { build(:offer, discount_type: :quantity_discount) }
-
-      it 'requires rate_type to be present' do
-        offer.rate_type = nil
-        expect(offer).not_to be_valid
-        expect(offer.errors[:rate_type]).to include("can't be blank")
-      end
-
-      context 'and rate_type is fixed_price' do
-        it 'requires fixed_price_cents to be present' do
-          offer.rate_type = :fixed_price
-          offer.fixed_price_cents = nil
-
-          expect(offer).not_to be_valid
-          expect(offer.errors[:fixed_price_cents]).to include("can't be blank")
-        end
-
-        it 'is valid with fixed_price_cents present' do
-          offer.rate_type = :fixed_price
-          offer.fixed_price_cents = 100
-
-          expect(offer).to be_valid
-        end
-      end
-
-      context 'and rate_type is percentage_rate' do
-        it 'requires percentage_rate to be present' do
-          offer.rate_type = :percentage_rate
-          offer.percentage_rate = nil
-
-          expect(offer).not_to be_valid
-          expect(offer.errors[:percentage_rate]).to include("can't be blank")
-        end
-
-        it 'is valid with percentage_rate present' do
-          offer.rate_type = :percentage_rate
-          offer.percentage_rate = 10.5
-
-          expect(offer).to be_valid
-        end
-
-        it 'validates percentage_rate is between 0 and 100' do
-          offer.rate_type = :percentage_rate
-
-          offer.percentage_rate = -1
-          expect(offer).not_to be_valid
-
-          offer.percentage_rate = 101
-          expect(offer).not_to be_valid
-
-          offer.percentage_rate = 50
-          expect(offer).to be_valid
-        end
-      end
-    end
-
     describe 'name validation' do
       it 'requires name to be present' do
         offer = build(:offer, name: nil)
         expect(offer).not_to be_valid
         expect(offer.errors[:name]).to include("can't be blank")
       end
-    end
 
-    describe 'discount_type validation' do
-      it 'requires discount_type to be present' do
-        offer = build(:offer, discount_type: nil)
+      it 'requires name to be unique' do
+        create(:offer, name: 'Unique Offer')
+        offer = build(:offer, name: 'Unique Offer')
         expect(offer).not_to be_valid
-        expect(offer.errors[:discount_type]).to include("can't be blank")
+        expect(offer.errors[:name]).to include("has already been taken")
       end
     end
 
-    describe 'minimum_quantity validation for quantity_discount' do
-      let(:offer) { build(:offer, discount_type: :quantity_discount, rate_type: :percentage_rate, percentage_rate: 10) }
-
-      it 'requires minimum_quantity to be present' do
-        offer.minimum_quantity = nil
-
+    describe 'offer_type validation' do
+      it 'requires offer_type to be present' do
+        offer = build(:offer, offer_type: nil)
         expect(offer).not_to be_valid
-        expect(offer.errors[:minimum_quantity]).to include("can't be blank")
+        expect(offer.errors[:offer_type]).to include("can't be blank")
+      end
+    end
+
+    describe 'required conditions validation' do
+      context 'when offer_type is buy_x_take_y' do
+        it 'cannot be saved without base_quantity and free_quantity conditions' do
+          offer = build(:offer, offer_type: :buy_x_take_y)
+          offer.offer_conditions.clear
+          expect(offer.save).to be_falsey
+          expect(offer.errors[:offer_conditions]).to include('Missing required conditions: base_quantity, free_quantity')
+        end
+
+        it 'is valid when built with required conditions via factory' do
+          offer = create(:offer, :buy_x_take_y)
+          expect(offer).to be_valid
+          expect(offer.offer_conditions.find_by(condition_type: 'base_quantity')).to be_present
+          expect(offer.offer_conditions.find_by(condition_type: 'free_quantity')).to be_present
+        end
       end
 
-      it 'requires minimum_quantity to be greater than 1' do
-        offer.minimum_quantity = 0
-        expect(offer).not_to be_valid
+      context 'when offer_type is quantity_discount_fixed_price' do
+        it 'cannot be saved without required conditions' do
+          offer = build(:offer, offer_type: :quantity_discount_fixed_price)
+          offer.offer_conditions.clear
+          expect(offer.save).to be_falsey
+          expect(offer.errors[:offer_conditions]).to include('Missing required conditions: minimum_quantity, fixed_price')
+        end
 
-        offer.minimum_quantity = 1
-        expect(offer).not_to be_valid
+        it 'is valid when built with required conditions via factory' do
+          offer = create(:offer, :quantity_discount_fixed_price)
+          expect(offer).to be_valid
+          expect(offer.offer_conditions.find_by(condition_type: 'minimum_quantity')).to be_present
+          expect(offer.offer_conditions.find_by(condition_type: 'fixed_price')).to be_present
+        end
+      end
 
-        offer.minimum_quantity = 2
-        expect(offer).to be_valid
+      context 'when offer_type is quantity_discount_percentage_rate' do
+        it 'cannot be saved without required conditions' do
+          offer = build(:offer, offer_type: :quantity_discount_percentage_rate)
+          offer.offer_conditions.clear
+          expect(offer.save).to be_falsey
+          expect(offer.errors[:offer_conditions]).to include('Missing required conditions: minimum_quantity, percentage_rate')
+        end
+
+        it 'is valid when built with required conditions via factory' do
+          offer = create(:offer, :quantity_discount_percentage_rate)
+          expect(offer).to be_valid
+          expect(offer.offer_conditions.find_by(condition_type: 'minimum_quantity')).to be_present
+          expect(offer.offer_conditions.find_by(condition_type: 'percentage_rate')).to be_present
+        end
+      end
+
+      context 'when changing offer_type' do
+        it 'cannot be saved when changing to quantity_discount_fixed_price without required conditions' do
+          offer = create(:offer, offer_type: :buy_x_take_y)
+          offer.offer_type = :quantity_discount_fixed_price
+
+          expect(offer.save).to be_falsey
+          expect(offer.errors[:offer_conditions]).to include('Missing required conditions: minimum_quantity, fixed_price')
+        end
+
+        it 'can be saved when changing offer_type and conditions are present' do
+          offer = create(:offer, offer_type: :buy_x_take_y)
+          offer.offer_conditions.create!(condition_type: 'minimum_quantity', condition_value: '3')
+          offer.offer_conditions.create!(condition_type: 'fixed_price', condition_value: '4.50')
+          offer.offer_type = :quantity_discount_fixed_price
+
+          expect(offer.save).to be_truthy
+          expect(offer).to be_valid
+        end
       end
     end
   end
