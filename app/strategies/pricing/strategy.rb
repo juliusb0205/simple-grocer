@@ -9,6 +9,10 @@ module Pricing
       calculate_pricing
     end
 
+    def applied_offer
+      @offer
+    end
+
     def conditions_met?
       raise NotImplementedError, "Subclasses must implement conditions_met? method"
     end

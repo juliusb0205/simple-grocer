@@ -25,13 +25,17 @@ class ProductScanner
     if existing_item
       existing_item.tap do |item|
         item.quantity += 1
-        item.price = Pricing::StrategyResolver.create(item, product.offer).call
+        strategy = Pricing::StrategyResolver.create(item, product.offer)
+        item.price = strategy.call
+        item.applied_offer = strategy.applied_offer
         item.save!
       end
     else
       new_item = basket.basket_items.build(product:, quantity: 1)
       new_item.tap do |item|
-        item.price = Pricing::StrategyResolver.create(item, product.offer).call
+        strategy = Pricing::StrategyResolver.create(item, product.offer)
+        item.price = strategy.call
+        item.applied_offer = strategy.applied_offer
         item.save!
       end
     end
