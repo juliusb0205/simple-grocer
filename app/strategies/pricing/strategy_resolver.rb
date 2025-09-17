@@ -2,7 +2,8 @@ module Pricing
   class StrategyResolver
     STRATEGY_MAP = {
       "buy_x_take_y" => Pricing::BuyXTakeYPricingStrategy,
-      "quantity_discount" => Pricing::QuantityDiscountPricingStrategy
+      "quantity_discount_fixed_price" => Pricing::QuantityDiscountFixedPricePricingStrategy,
+      "quantity_discount_percentage_rate" => Pricing::QuantityDiscountPercentageRatePricingStrategy
     }.freeze
 
     def self.create(basket_item, offer = nil)

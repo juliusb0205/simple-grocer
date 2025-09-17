@@ -5,7 +5,8 @@ class Offer < ApplicationRecord
 
   enum :offer_type, {
     buy_x_take_y: 0,
-    quantity_discount: 1
+    quantity_discount_fixed_price: 1,
+    quantity_discount_percentage_rate: 2
   }
 
   validates :name, presence: true, uniqueness: true
@@ -16,8 +17,11 @@ class Offer < ApplicationRecord
     "buy_x_take_y" => {
       required: [ "base_quantity", "free_quantity" ]
     },
-    "quantity_discount" => {
-      required: [ "minimum_quantity" ]
+    "quantity_discount_fixed_price" => {
+      required: [ "minimum_quantity", "fixed_price" ]
+    },
+    "quantity_discount_percentage_rate" => {
+      required: [ "minimum_quantity", "percentage_rate" ]
     }
   }.freeze
 

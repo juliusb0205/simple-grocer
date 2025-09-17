@@ -48,8 +48,9 @@ ProductOffer.find_or_create_by!(product: green_tea, offer: offer_1)
 
 offer_2 = Offer.find_by(name: 'Strawberry Bulk Discount')
 unless offer_2
-  offer_2 = Offer.new(name: 'Strawberry Bulk Discount', description: 'Buy 3 or more strawberries for 4.50€ each', offer_type: :quantity_discount)
+  offer_2 = Offer.new(name: 'Strawberry Bulk Discount', description: 'Buy 3 or more strawberries for 4.50€ each', offer_type: :quantity_discount_fixed_price)
   offer_2.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: '3')
+  offer_2.offer_conditions.build(condition_type: 'fixed_price', condition_value: '4.50')
   offer_2.save!
 end
 
@@ -58,8 +59,9 @@ ProductOffer.find_or_create_by!(product: strawberry, offer: offer_2)
 
 offer_3 = Offer.find_by(name: 'Coffee Bulk Discount')
 unless offer_3
-  offer_3 = Offer.new(name: 'Coffee Bulk Discount', description: 'Buy 3 or more coffees for 2/3 of original price', offer_type: :quantity_discount)
+  offer_3 = Offer.new(name: 'Coffee Bulk Discount', description: 'Buy 3 or more coffees for 2/3 of original price', offer_type: :quantity_discount_percentage_rate)
   offer_3.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: '3')
+  offer_3.offer_conditions.build(condition_type: 'percentage_rate', condition_value: '66.67')
   offer_3.save!
 end
 

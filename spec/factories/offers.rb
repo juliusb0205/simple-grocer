@@ -26,12 +26,33 @@ FactoryBot.define do
       end
     end
 
-    trait :quantity_discount do
-      offer_type { :quantity_discount }
+    trait :quantity_discount_fixed_price do
+      offer_type { :quantity_discount_fixed_price }
 
-      after(:build) do |offer|
+      transient do
+        minimum_quantity { 3 }
+        fixed_price { 4.50 }
+      end
+
+      after(:build) do |offer, evaluator|
         offer.offer_conditions.clear
-        offer.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: '3')
+        offer.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: evaluator.minimum_quantity.to_s)
+        offer.offer_conditions.build(condition_type: 'fixed_price', condition_value: evaluator.fixed_price.to_s)
+      end
+    end
+
+    trait :quantity_discount_percentage_rate do
+      offer_type { :quantity_discount_percentage_rate }
+
+      transient do
+        minimum_quantity { 3 }
+        percentage_rate { 66.67 }
+      end
+
+      after(:build) do |offer, evaluator|
+        offer.offer_conditions.clear
+        offer.offer_conditions.build(condition_type: 'minimum_quantity', condition_value: evaluator.minimum_quantity.to_s)
+        offer.offer_conditions.build(condition_type: 'percentage_rate', condition_value: evaluator.percentage_rate.to_s)
       end
     end
   end
